@@ -1,0 +1,13 @@
+// https://www.typescriptlang.org/docs/handbook/compiler-options.html
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "pretty": true,
+    "strict": true,
+    "sourceMap": true,
+    "declaration": true,
+    "lib": ["dom", "esnext"]
+  }
+}

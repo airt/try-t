@@ -1,0 +1,38 @@
+{
+  "name": "try-t",
+  "version": "0.2.0",
+  "description": "Try type in Typescript",
+  "keywords": [
+    "try",
+    "typescript"
+  ],
+  "license": "MIT",
+  "author": "airt <airtial@gmail.com>",
+  "homepage": "https://github.com/airt/try-t",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airt/try-t"
+  },
+  "bugs": {
+    "url": "https://github.com/airt/try-t/issues"
+  },
+  "main": "lib/try.js",
+  "types": "lib/try.d.ts",
+  "devDependencies": {
+    "@types/node": "^7.0.0",
+    "ava": "^0.19.0",
+    "coveralls": "^2.0.0",
+    "nyc": "^10.0.0",
+    "tslint": "^5.0.0",
+    "tslint-config-standard": "^5.0.0",
+    "typescript": "^2.0.0"
+  },
+  "scripts": {
+    "test": "nyc ava",
+    "lint": "tslint -p tsconfig.json --type-check 'src/**/*.ts'",
+    "build": "tsc --outDir lib",
+    "clean": "rm -rf lib coverage .nyc_output",
+    "report": "nyc report --reporter=html",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
+  }
+}
