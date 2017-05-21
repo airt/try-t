@@ -21,7 +21,6 @@ or
 - [Try.of](#tryof)
 - [Try.m](#trym)
 - [Try.p](#tryp)
-- [Try.lift](#trylift)
 - [Try#match](#trymatch)
 - [Try#isFailure](#tryisfailure)
 - [Try#isSuccess](#tryissuccess)
@@ -33,7 +32,6 @@ or
 - [Try#fold](#tryfold)
 - [Try#filter](#tryfilter)
 - [Try#flatMap](#tryflatmap)
-- [Try#flatten](#tryflatten)
 - [Try#foreach](#tryforeach)
 - [Try#onFailure](#tryonfailure)
 - [Try#onSuccess](#tryonsuccess)
@@ -73,12 +71,6 @@ Try.m: <A>(f: () => Try<A>) => Try<A>
 
 ```ts
 Try.p: <A>(p: Promise<A>) => Promise<Try<A>>
-```
-
-### Try.lift
-
-```ts
-Try.lift: <A, B, C>(f: Fn2<A, B, C>) => Fn2<Try<A>, Try<B>, Try<C>>
 ```
 
 ### Try#match
@@ -145,12 +137,6 @@ filter: (p: Fn<A, boolean>) => Try<A>
 
 ```ts
 flatMap: <B>(f: Fn<A, Try<B>>) => Try<B>
-```
-
-### Try#flatten
-
-```ts
-flatten: <B>() => Try<B>
 ```
 
 ### Try#foreach

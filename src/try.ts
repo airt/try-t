@@ -1,7 +1,7 @@
 export interface TryAsJson<A> {
   type: string
   success: boolean
-  payload: A | Error
+  payload: A | Pick<Error, 'name' | 'message'>
 }
 
 export type Fn<A, B> = (x: A) => B
@@ -29,9 +29,6 @@ export default abstract class Try<A> implements Iterable<A> {
   abstract filter: (p: Fn<A, boolean>) => Try<A>
 
   abstract flatMap: <B>(f: Fn<A, Try<B>>) => Try<B>
-
-  // A <:< Try[B]
-  abstract flatten: <B>() => Try<B>
 
   abstract foreach: (f: Fn<A, void>) => void
 
@@ -74,8 +71,8 @@ export default abstract class Try<A> implements Iterable<A> {
   static p = <A>(p: Promise<A>): Promise<Try<A>> =>
     p.then(Try.success).catch(Try.failure)
 
-  static lift = <A, B, C>(f: Fn2<A, B, C>): Fn2<Try<A>, Try<B>, Try<C>> =>
-    ta => tb => ta.flatMap(a => tb.map(b => f(a)(b)))
+  // static join = <A>(t: Try<Try<A>>): Try<A> =>
+  //   t.flatMap(x => x)
 
   match = <B>(matchers: { success: Fn<A, B>, failure: Fn<Error, B> }): B =>
     this.fold(matchers.failure, matchers.success)
@@ -108,8 +105,6 @@ class Failure<A> extends Try<A> {
 
   flatMap = <B>(f: Fn<A, Try<B>>): Try<B> => this.asTryB<B>()
 
-  flatten = <B>(): Try<B> => this.asTryB<B>()
-
   foreach = (f: Fn<A, void>): void => (void 0)
 
   onFailure = (f: Fn<Error, void>): Try<A> => { f(this.error); return this }
@@ -130,7 +125,10 @@ class Failure<A> extends Try<A> {
   toJSON = (): TryAsJson<A> => ({
     type: 'failure',
     success: false,
-    payload: this.error,
+    payload: {
+      name: this.error.name,
+      message: this.error.message,
+    },
   })
 
   toString = () => `Failure(${this.error.name}: ${this.error.message})`
@@ -168,14 +166,6 @@ class Success<A> extends Try<A> {
 
   flatMap = <B>(f: Fn<A, Try<B>>): Try<B> =>
     Try.m(() => f(this.value))
-
-  flatten = <B>(): Try<B> => {
-    if (this.value instanceof Try) {
-      return this.value
-    } else {
-      throw new Error(`can not flatten, ${this.value} is not a \`Try\``)
-    }
-  }
 
   foreach = (f: Fn<A, void>): void => f(this.value)
 

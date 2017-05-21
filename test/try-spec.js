@@ -55,32 +55,6 @@ test('Try.p', async t => {
   t.is(resultOfPResolve.get(), valueB)
 })
 
-test('Try.lift', t => {
-  const f = a => b => a + b
-
-  const lf = Try.lift(f)
-
-  const resultOfLiftSS = lf(Try.success(1))(Try.success(2))
-
-  const resultOfLiftSF = lf(Try.success(1))(Try.failure(errorB))
-
-  const resultOfLiftFS = lf(Try.failure(errorB))(Try.success(2))
-
-  const resultOfLiftFF = lf(Try.failure(errorB))(Try.failure(new Error('')))
-
-  t.true(resultOfLiftSS.isSuccess)
-  t.is(resultOfLiftSS.get(), 3)
-
-  t.true(resultOfLiftSF.isFailure)
-  t.is(resultOfLiftSF.failed().get(), errorB)
-
-  t.true(resultOfLiftFS.isFailure)
-  t.is(resultOfLiftFS.failed().get(), errorB)
-
-  t.true(resultOfLiftFF.isFailure)
-  t.is(resultOfLiftFF.failed().get(), errorB)
-})
-
 test('Try#match', t => {
   const failure = createFailure()
   const success = createSuccess()
@@ -309,22 +283,6 @@ test('Try#flatMap', t => {
   t.is(resultOfFlatMapWithThrowsS.failed().get(), errorB)
 })
 
-test('Try#flatten', t => {
-  const failure = createFailure()
-  const success = createSuccess()
-
-  const successFailure = Try.success(failure)
-  const successSuccess = Try.success(success)
-
-  const successSuccessSuccess = Try.success(successSuccess)
-
-  t.is(failure.flatten(), failure)
-  t.throws(() => success.flatten())
-  t.is(successFailure.flatten(), failure)
-  t.is(successSuccess.flatten(), success)
-  t.is(successSuccessSuccess.flatten(), successSuccess)
-})
-
 test('Try#foreach', t => {
   const failure = createFailure()
   const success = createSuccess()
@@ -506,17 +464,25 @@ test('Try#toJSON', t => {
   const failure = createFailure()
   const success = createSuccess()
 
-  t.deepEqual(failure.toJSON(), {
-    type: 'failure',
-    success: false,
-    payload: error,
-  })
+  const strip = s => s.replace(/\n\s+/g, '').replace(/:\s/g, ':')
 
-  t.deepEqual(success.toJSON(), {
-    type: 'success',
-    success: true,
-    payload: value,
-  })
+  const failureString = strip(`{
+    "type": "failure",
+    "success": false,
+    "payload": {
+      "name": "${error.name}",
+      "message": "${error.message}"
+    }
+  }`)
+
+  const successString = strip(`{
+    "type": "success",
+    "success": true,
+    "payload": "${value}"
+  }`)
+
+  t.is(JSON.stringify(failure), failureString)
+  t.is(JSON.stringify(success), successString)
 })
 
 test('Try#toString', t => {
