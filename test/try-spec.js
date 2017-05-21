@@ -147,8 +147,8 @@ test('Try#getOrElse', t => {
   const failure = createFailure()
   const success = createSuccess()
 
-  t.is(failure.getOrElse('other'), 'other')
-  t.is(success.getOrElse('other'), value)
+  t.is(failure.getOrElse(() => 'other'), 'other')
+  t.is(success.getOrElse(() => 'other'), value)
 })
 
 test('Try#orElse', t => {
@@ -157,8 +157,8 @@ test('Try#orElse', t => {
 
   const another = Try.of(() => '')
 
-  t.is(failure.orElse(another), another)
-  t.is(success.orElse(another), success)
+  t.is(failure.orElse(() => another), another)
+  t.is(success.orElse(() => another), success)
 })
 
 test('Try#map', t => {
@@ -338,6 +338,42 @@ test('Try#foreach', t => {
   success.foreach(x => {
     t.is(x, value)
   })
+})
+
+test('Try#onFailure', t => {
+  const failure = createFailure()
+  const success = createSuccess()
+
+  t.plan(3)
+
+  const resultOfOnFailureF = failure.onFailure(e => {
+    t.is(e, error)
+  })
+
+  const resultOfOnFailureS = success.onFailure(e => {
+    t.fail()
+  })
+
+  t.is(resultOfOnFailureF, failure)
+  t.is(resultOfOnFailureS, success)
+})
+
+test('Try#onSuccess', t => {
+  const failure = createFailure()
+  const success = createSuccess()
+
+  t.plan(3)
+
+  const resultOfOnSuccessF = failure.onSuccess(x => {
+    t.fail()
+  })
+
+  const resultOfOnSuccessS = success.onSuccess(x => {
+    t.is(x, value)
+  })
+
+  t.is(resultOfOnSuccessF, failure)
+  t.is(resultOfOnSuccessS, success)
 })
 
 test('Try#transform', t => {

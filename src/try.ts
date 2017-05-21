@@ -16,9 +16,9 @@ export default abstract class Try<A> implements Iterable<A> {
 
   abstract get: () => A
 
-  abstract getOrElse: (other: A) => A
+  abstract getOrElse: (other: () => A) => A
 
-  abstract orElse: (other: Try<A>) => Try<A>
+  abstract orElse: (other: () => Try<A>) => Try<A>
 
   abstract map: <B>(f: Fn<A, B>) => Try<B>
 
@@ -34,6 +34,10 @@ export default abstract class Try<A> implements Iterable<A> {
   abstract flatten: <B>() => Try<B>
 
   abstract foreach: (f: Fn<A, void>) => void
+
+  abstract onFailure: (f: Fn<Error, void>) => Try<A>
+
+  abstract onSuccess: (f: Fn<A, void>) => Try<A>
 
   abstract transform: <B>(hs: Fn<A, Try<B>>, hf: Fn<Error, Try<B>>) => Try<B>
 
@@ -90,9 +94,9 @@ class Failure<A> extends Try<A> {
 
   get = (): A => { throw this.error }
 
-  getOrElse = (other: A): A => other
+  getOrElse = (other: () => A): A => other()
 
-  orElse = (other: Try<A>): Try<A> => other
+  orElse = (other: () => Try<A>): Try<A> => other()
 
   map = <B>(f: Fn<A, B>): Try<B> => this.asTryB<B>()
 
@@ -107,6 +111,10 @@ class Failure<A> extends Try<A> {
   flatten = <B>(): Try<B> => this.asTryB<B>()
 
   foreach = (f: Fn<A, void>): void => (void 0)
+
+  onFailure = (f: Fn<Error, void>): Try<A> => { f(this.error); return this }
+
+  onSuccess = (f: Fn<A, void>): Try<A> => this
 
   transform = <B>(hs: Fn<A, Try<B>>, hf: Fn<Error, Try<B>>): Try<B> =>
     Try.m(() => hf(this.error))
@@ -141,9 +149,9 @@ class Success<A> extends Try<A> {
 
   get = (): A => this.value
 
-  getOrElse = (other: A): A => this.value
+  getOrElse = (other: () => A): A => this.value
 
-  orElse = (other: Try<A>): Try<A> => this
+  orElse = (other: () => Try<A>): Try<A> => this
 
   map = <B>(f: Fn<A, B>): Try<B> => Try.of(() => f(this.value))
 
@@ -170,6 +178,10 @@ class Success<A> extends Try<A> {
   }
 
   foreach = (f: Fn<A, void>): void => f(this.value)
+
+  onFailure = (f: Fn<Error, void>): Try<A> => this
+
+  onSuccess = (f: Fn<A, void>): Try<A> => { f(this.value); return this }
 
   transform = <B>(hs: Fn<A, Try<B>>, hf: Fn<Error, Try<B>>): Try<B> =>
     this.flatMap(hs)

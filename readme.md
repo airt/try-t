@@ -35,6 +35,8 @@ or
 - [Try#flatMap](#tryflatmap)
 - [Try#flatten](#tryflatten)
 - [Try#foreach](#tryforeach)
+- [Try#onFailure](#tryonfailure)
+- [Try#onSuccess](#tryonsuccess)
 - [Try#transform](#trytransform)
 - [Try#recover](#tryrecover)
 - [Try#recoverWith](#tryrecoverwith)
@@ -106,13 +108,13 @@ get: () => A
 ### Try#getOrElse
 
 ```ts
-getOrElse: (other: A) => A
+getOrElse: (other: () => A) => A
 ```
 
 ### Try#orElse
 
 ```ts
-orElse: (other: Try<A>) => Try<A>
+orElse: (other: () => Try<A>) => Try<A>
 ```
 
 ### Try#map
@@ -155,6 +157,18 @@ flatten: <B>() => Try<B>
 
 ```ts
 foreach: (f: Fn<A, void>) => void
+```
+
+### Try#onFailure
+
+```ts
+onFailure: (f: Fn<Error, void>) => Try<A>
+```
+
+### Try#onSuccess
+
+```ts
+onSuccess: (f: Fn<A, void>) => Try<A>
 ```
 
 ### Try#transform
