@@ -8,13 +8,11 @@ Try type in Typescript
 
 ## installation
 
-`yarn add try-t`
-
-or
-
 `npm install try-t --save`
 
 ## api
+
+For details, see [test/try-spec](https://github.com/airt/try-t/blob/develop/test/try-spec.js)
 
 - [Try.failure](#tryfailure)
 - [Try.success](#trysuccess)

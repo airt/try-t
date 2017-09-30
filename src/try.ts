@@ -191,3 +191,8 @@ class Success<A> extends Try<A> {
   toString = () => `Success(${this.value})`
 
 }
+
+export {
+  Failure as _Failure,
+  Success as _Success,
+}
