@@ -23,13 +23,14 @@
     "ava": "^0.22.0",
     "coveralls": "^3.0.0",
     "nyc": "^11.0.0",
+    "prettier": "~1.9.0",
     "tslint": "^5.0.0",
-    "tslint-config-standard": "^6.0.0",
+    "tslint-config-levi": "^0.1.0",
     "typescript": "^2.0.0"
   },
   "scripts": {
     "test": "nyc ava",
-    "lint": "tslint -p tsconfig.json --type-check 'src/**/*.ts'",
+    "lint": "tslint -p . -t verbose",
     "build": "tsc --outDir lib",
     "clean": "rm -rf lib coverage .nyc_output",
     "report": "nyc report --reporter=html",
